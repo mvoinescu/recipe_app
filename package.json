@@ -1,0 +1,27 @@
+{
+  "name": "recipe_app",
+  "version": "1.0.0",
+  "description": "recipe app project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production",
+    "start": "webpack-dev-server --mode development --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mvoinescu/recipe_app.git"
+  },
+  "author": "Marius Voinescu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mvoinescu/recipe_app/issues"
+  },
+  "homepage": "https://github.com/mvoinescu/recipe_app#readme",
+  "devDependencies": {
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1"
+  },
+  "dependencies": {}
+}
