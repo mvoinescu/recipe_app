@@ -2,6 +2,7 @@
 // https://www.food2fork.com/api/search 
 
 import Search from './models/Search';
+import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
 import { elements, renderLoader, clearLoader } from './views/base';
 
@@ -13,10 +14,16 @@ import { elements, renderLoader, clearLoader } from './views/base';
  */
 
 const state = {};
+
+/**
+ * Search Controller
+ */
+
 const controlSearch = async () => {
     // 1. Get query from the view
-    const query = searchView.getInput();
-    console.log(query);
+    // const query = searchView.getInput();
+    const query = 'pizza';
+    //console.log(query);
 
     if (query){
         // 2. New search object and add to state
@@ -27,12 +34,18 @@ const controlSearch = async () => {
         searchView.clearResults();
         renderLoader(elements.searchRes);
 
-        // 4. Search for recipes
-        await state.search.getResults();
+        try{
+            // 4. Search for recipes
+            await state.search.getResults();
 
-        // 5. Render results on the UI
-        clearLoader();
-        searchView.renderResults(state.search.result);
+            // 5. Render results on the UI
+            clearLoader();
+            searchView.renderResults(state.search.result);
+        } catch(err){
+            alert('Bummer. We hit a snag.');
+            clearLoader();
+        }
+        
     }
 }
 
@@ -40,3 +53,58 @@ elements.searchBox.addEventListener('submit', e => {
     e.preventDefault();
     controlSearch();
 });
+
+// TESTING
+window.addEventListener('load', e => {
+    e.preventDefault();
+    controlSearch();
+});
+
+elements.searchResPages.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-inline');
+    if (btn){
+        const goToPage = parseInt(btn.dataset.goto, 10);
+        searchView.clearResults();
+        searchView.renderResults(state.search.result, goToPage);
+        
+    }
+    
+});
+
+
+/**
+ * Recipe Controller
+ */
+
+const controlRecipe = async () =>{
+    // Get ID from URL
+    const id = window.location.hash.replace('#', '');
+    console.log(id);
+
+    if(id){
+        // Prep UI for Changes
+
+        // Create new recipe Object
+        state.recipe = new Recipe(id);
+        
+        // TESTING
+        window.r = state.recipe;
+
+        try{
+            // Get recipe data
+            await state.recipe.getRecipe();
+
+            // Calc Servings and time
+            state.recipe.calcTime();
+            state.recipe.calcServings();
+
+            // Render recipe
+            console.log(state.recipe);
+        } catch(err){
+            alert(`Whoops! I have calculated this incorrectly. Let's try again`)
+        }
+    }
+};
+
+
+['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
