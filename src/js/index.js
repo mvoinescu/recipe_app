@@ -42,7 +42,7 @@ const controlSearch = async () => {
             clearLoader();
             searchView.renderResults(state.search.result);
         } catch(err){
-            alert('Bummer. We hit a snag.');
+            alert('Search Controller: Bummer. We hit a snag.');
             clearLoader();
         }
         
@@ -77,7 +77,12 @@ const controlRecipe = async () =>{
 
     if(id){
         // Prep UI for Changes
+        recipeView.clearRecipe();
         renderLoader(elements.recipe);
+
+        // Highlight selected search item
+        if(state.search) searchView.highlightSelected(id);
+
         // Create new recipe Object
         state.recipe = new Recipe(id);
         
@@ -93,12 +98,30 @@ const controlRecipe = async () =>{
             clearLoader();
             recipeView.renderRecipe(state.recipe);
 
-            // console.log(state.recipe);
+            console.log(state.recipe);
         } catch(err){
-            alert(`Whoops! I have calculated this incorrectly. Let's try again`)
+            alert(`Recipe Controller: Whoops! I have calculated this incorrectly. Let's try again`)
         }
     }
 };
 
 
 ['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
+
+// Handling recipe button clicks
+
+elements.recipe.addEventListener('click', e => {
+    if (e.target.matches('.btn-decrease, .btn-decrease *')){
+        // Decrease button is cliekced
+        if (state.recipe.servings > 1){
+            state.recipe.updateServings('dec'); 
+            recipeView.updateServingsIngredients(state.recipe);
+        }
+        
+    }else if (e.target.matches('.btn-increase, .btn-increase *')){
+        // Increase button is cliekced
+        state.recipe.updateServings('inc');
+        recipeView.updateServingsIngredients(state.recipe);
+    }
+    console.log(state.recipe);
+});
